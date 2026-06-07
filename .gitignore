@@ -1,0 +1,27 @@
+# Ignore everything
+*
+
+# Git metadata
+!.gitignore
+!README.md
+
+# Allow anchor root
+!anchor/
+anchor/*
+
+# Allow published case studies
+!anchor/001-authority-overreach/
+!anchor/001-authority-overreach/**
+
+!anchor/002-policy-drift/
+!anchor/002-policy-drift/**
+
+!anchor/003-audit-reconstruction/
+!anchor/003-audit-reconstruction/**
+
+# Optional future public assets
+!governance-assets/
+governance-assets/*
+
+!governance-assets/ai-governance-checklist-v1/
+!governance-assets/ai-governance-checklist-v1/**
