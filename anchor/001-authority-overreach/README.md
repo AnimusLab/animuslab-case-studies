@@ -11,11 +11,11 @@
 
 ## 1. Executive Summary
 
-On August 1, 2012, Knight Capital Group, one of the largest market makers in the U.S., suffered one of the most expensive software failures in financial history. 
+When I look back at the major financial systems failures of the last two decades, the Knight Capital Group disaster of August 1, 2012 stands out as the ultimate warning. 
 
-In just **45 minutes**, a faulty deployment caused their trading system to flood the U.S. equity markets with millions of erroneous orders. The firm executed over 4 million trades across 154 stocks, accumulating billions in unintended positions and losing approximately **$440 million** — roughly **three times** its annual profit at the time, leading to the near-bankruptcy and eventual forced acquisition of the firm.
+In just **45 minutes**, a faulty deployment caused their trading system to flood the U.S. equity markets with millions of erroneous orders. The firm executed over 4 million trades across 154 stocks, accumulating billions in unintended positions and losing approximately **$440 million** — roughly **three times** its annual profit at the time. This incident led to the near-bankruptcy and eventual forced acquisition of the firm.
 
-The root cause was not a single code bug, but a **governance failure**: legacy code (an old "Power Peg" function) was accidentally reactivated during a software update. There was no effective runtime policy enforcement, no kill switch at the intent level, and no cryptographic audit trail to detect or contain the drift in real time. This case serves as a canonical reference for why deterministic governance infrastructure must be treated as core system architecture, not an optional safety layer.
+To me, the root cause was not a single code bug, but a **governance failure**: legacy code (an old "Power Peg" function) was accidentally reactivated during a software update. There was no effective runtime policy enforcement, no kill switch at the intent level, and no cryptographic audit trail to detect or contain the drift in real time. I believe this case serves as a canonical reference for why deterministic governance infrastructure must be treated as core system architecture, not an optional safety layer.
 
 ---
 
@@ -39,7 +39,7 @@ The malfunction occurred over a compressed 45-minute window following the market
 
 ## 3. Historical Evidence & Verification Chain
 
-This analysis is grounded in verified public records, court filings, and regulatory findings:
+I have reconstructed this analysis using verified public records, court filings, and regulatory findings:
 
 1.  **SEC Administrative Order (2013-222):** The U.S. Securities and Exchange Commission charged Knight Capital with violating the Market Access Rule, documenting that the deployment failed to disable or restrict access to the legacy "Power Peg" logic. Knight agreed to pay a $12 million penalty.  
     *   *Reference:* [SEC Press Release (2013)](https://www.sec.gov/newsroom/press-releases/2013-222) | [Full SEC Order PDF](https://www.sec.gov/files/litigation/admin/2013/34-70694.pdf)
@@ -50,17 +50,21 @@ This analysis is grounded in verified public records, court filings, and regulat
 
 ---
 
-## 4. Video Briefing & Documentary Evidence
+## 4. Video Documentation & Contemporary Briefings
 
-For a detailed technical breakdown of the software deployment failure and order accumulation, watch the following documentary briefing:
+Here is the compiled audio-visual evidence and contemporary reporting detailing the incident's mechanics and financial impact:
 
-*   [Dev Loses $440 Million in 28 minutes — Technical Documentary](https://www.youtube.com/watch?v=263CooDJZCY)
+[Dev Loses $440 Million in 28 minutes](https://www.youtube.com/watch?v=263CooDJZCY&channel=Daniel+Boctor&title=Dev+Loses+$440+Million+in+28+minutes&notes=Most+popular+detailed+breakdown+(360k%2B+views))
+[Knight Capital algorithm malfunction](https://www.youtube.com/watch?v=oIhn-l0y6dI&channel=Financial+Times&title=Knight+Capital+algorithm+malfunction&notes=Original+2012+coverage)
+[Lessons Learnt From Knight Capital's Trading Glitch](https://www.cnbc.com/video/2012/08/02/lessons-learnt-from-knight-capitals-trading-glitch.html?channel=CNBC&title=Lessons+Learnt+From+Knight+Capital's+Trading+Glitch&notes=Contemporary+analysis)
+[Knight Capital's $4.5 Billion Trading Disaster](https://www.youtube.com/watch?v=cVAbk1pQckw&channel=Various&title=Knight+Capital's+$4.5+Billion+Trading+Disaster&notes=Short+explainer)
+[Glitch Costs Knight Capital $440 Million](https://www.wsj.com/video/glitch-costs-knight-capital-440-million/06AB3DDC-2441-4F9A-B208-B5B61A28C5FB?channel=WSJ&title=Glitch+Costs+Knight+Capital+$440+Million&notes=Official+WSJ+video)
 
 ---
 
 ## 5. Governance Failure & Root Cause Analysis
 
-From an **institutional governance perspective**, the root cause was the lack of a decoupled runtime execution boundary:
+From my perspective, this wasn't just a code bug; it was a fundamental runtime boundary failure. Let's analyze how the system behaved:
 
 *   **The Capability Existed:** The legacy "Power Peg" code block was compiled and present in the production binary.
 *   **The Authority Was Assumed:** The server executed the module's requests because the system assumed that any code present in the binary was authorized to run.
@@ -90,10 +94,10 @@ The action has already occurred. The audit trail exists. The damage exists as we
 
 ## 6. How Anchor Changes the Outcome
 
-Anchor introduces deterministic runtime verification. Before execution, every request is evaluated against an approved governance policy:
+When I built Anchor, I wanted to ensure this exact class of disaster is mathematically impossible. Anchor introduces deterministic runtime verification. Before execution, every request is evaluated against an approved governance policy:
 
 ```text
-              Execution Request (PowerPeg)
+               Execution Request (PowerPeg)
                            │
                            ▼
              ┌───────────────────────────┐
@@ -111,12 +115,12 @@ Anchor introduces deterministic runtime verification. Before execution, every re
       (Run Module)             (Halt & Seal Log)
 ```
 
-Anchor's two-layer governance system stops this class of failure:
+My design for Anchor's two-layer governance system stops this class of failure:
 
 *   **Layer 1 (Static Code Isolation):** During compilation/deployment, Tree-sitter AST analysis + Diamond Cage WASM sandboxing flags the reactivation of the dormant legacy code block as a high-severity violation against the sealed constitution.
 *   **Layer 2 (Runtime Enforcement):** The `@anchor.enforce()` interceptor evaluates every generated order against active policies before execution.
 *   **Decision Audit Chain (DAC):** Every decision is cryptographically logged with full provenance, making forensic analysis immediate instead of hours later.
-*   **Governance Invariants:** Deterministic checks (including ETH domain rules) prevent the system from entering an unsafe state.
+*   **Governance Invariants:** Deterministic checks prevent the system from entering an unsafe state.
 
 ---
 
@@ -171,4 +175,4 @@ Action:               Execution Denied. Process Terminated.
 ---
 
 ## 9. Key Takeaways
-Probabilistic monitoring and post-hoc analysis are insufficient for high-velocity agentic systems. The objective is not merely to explain why a system acted, but to **ensure it cannot act outside approved authority in the first place**.
+To me, the core lesson of the Knight Capital incident is that post-hoc monitoring and probabilistic analysis are relics of an era when humans moved slower than machines. For high-velocity agentic systems, **mathematical enforcement at runtime** is the only acceptable standard.
