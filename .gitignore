@@ -4,6 +4,8 @@
 # Git metadata
 !.gitignore
 !README.md
+!docs/
+!docs/**
 
 # Allow anchor root
 !anchor/
