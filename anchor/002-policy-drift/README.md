@@ -34,14 +34,30 @@ When I analyze this case, it represents a classic failure of soft semantic bound
 
 Here is how the policy drift event and subsequent legal liability unfolded:
 
-```text
-Nov 2022 ──────── Passenger queries chatbot regarding bereavement fare policies.
-Nov 2022 ──────── Chatbot drifts from official guidelines; outputs: "Apply retroactively."
-Nov 2022 ──────── Passenger purchases tickets at full price, relying on chatbot advice.
-Dec 2022 ──────── Passenger requests retroactive refund; Air Canada rejects claim, citing official policy.
-Feb 2024 ──────── BC Tribunal rules against Air Canada, establishing legal liability for chatbot drift.
-                  └─ Case Reference: Moffatt v. Air Canada (2024 BCCRT 149)
-                  └─ Outcome: Air Canada ordered to pay damages and fees.
+```mermaid
+graph TD
+    classDef time fill:#0f0f15,stroke:#2e2e3f,stroke-width:1px,color:#818cf8,font-family:monospace;
+    classDef event fill:#14141b,stroke:#2a2a35,stroke-width:1px,color:#e5e5e5;
+    classDef crit fill:#2a1212,stroke:#7f1d1d,stroke-width:1px,color:#f87171;
+    classDef result fill:#111827,stroke:#374151,stroke-width:2px,color:#38bdf8;
+
+    t1[Nov 2022] --> e1[Passenger queries chatbot regarding bereavement fare policies]
+    e1 --> t2[Nov 2022]
+    t2 --> e2[Chatbot drifts from guidelines and outputs: 'Apply retroactively']
+    e2 --> t3[Nov 2022]
+    t3 --> e3[Passenger purchases tickets at full price, relying on chatbot advice]
+    e3 --> t4[Dec 2022]
+    t4 --> e4[Passenger requests refund; Air Canada rejects claim citing static policy]
+    e4 --> t5[Feb 2024]
+    t5 --> e5[BC Tribunal rules against Air Canada, establishing legal chatbot liability]
+    
+    e5 --> r1[Case Reference: Moffatt v. Air Canada 2024 BCCRT 149]
+    e5 --> r2[Outcome: Air Canada ordered to pay damages and fees]
+
+    class t1,t2,t3,t4,t5 time;
+    class e1,e3,e4 event;
+    class e2,e5 crit;
+    class r1,r2 result;
 ```
 
 ---
@@ -79,23 +95,30 @@ From my perspective, this failure was caused by the assumption that generative l
 
 Anchor introduces an active policy boundary between the generative model and the client output channel. The model can generate raw natural language freely, but before the text is emitted, Anchor evaluates the semantic assertions against the active policy constitution:
 
-```text
-               Raw Model Output (Bereavement FAQ)
-                            │
-                            ▼
-              ┌───────────────────────────┐
-              │   Anchor Policy Engine    │
-              │                           │
-              │  1. Parse Assertions      │
-              │  2. Validate Obligation   │
-              │  3. Rewrite / Block Drift │
-              └─────────────┬─────────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              │                           │
-              ▼                           ▼
-       [POLICY MATED]              [POLICY VIOLATED]
-         (Send Text)            (Coerce to Compliant Text)
+```mermaid
+graph TD
+    classDef request fill:#0f0f15,stroke:#2e2e3f,stroke-width:1px,color:#818cf8;
+    classDef engine fill:#0b0b14,stroke:#3b82f6,stroke-width:1.5px,color:#e5e5e5;
+    classDef allow fill:#14532d,stroke:#22c55e,stroke-width:1px,color:#86efac;
+    classDef deny fill:#7f1d1d,stroke:#ef4444,stroke-width:1px,color:#fca5a5;
+
+    Req[Raw Model Output: Bereavement FAQ] --> Engine{Anchor Policy Engine}
+    
+    subgraph Checks ["Drift Remediation"]
+        Engine -.-> C1[1. Parse Assertions]
+        Engine -.-> C2[2. Validate Obligation]
+        Engine -.-> C3[3. Rewrite / Block Drift]
+    end
+
+    Engine -->|Policy Met| Allow[POLICY MET <br/> Send Raw Text]
+    Engine -->|Policy Violated| Deny[POLICY VIOLATED <br/> Coerce to Compliant Text]
+
+    class Req request;
+    class Engine,C1,C2,C3 engine;
+    class Allow allow;
+    class Deny deny;
+
+    style Checks fill:#08080c,stroke:#1f2937,stroke-width:1px,stroke-dasharray: 5 5;
 ```
 
 My design for Anchor's drift mitigation operates at the runtime interception layer:

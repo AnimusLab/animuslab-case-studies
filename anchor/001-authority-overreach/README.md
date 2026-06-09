@@ -34,16 +34,34 @@ To me, the root cause was not a single code bug, but a **governance failure**: l
 
 The malfunction occurred over a compressed 45-minute window following the market open:
 
-```text
-07:00 AM EST ──── Software deployment completed across production servers.
-09:30 AM EST ──── Market Open. Orders begin routing.
-09:30:15 AM EST ── Legacy "Power Peg" logic is triggered by incoming orders.
-09:31:00 AM EST ── System begins automatically placing high-frequency trades.
-09:45:00 AM EST ── Traders observe anomalous volume; source remains unverified.
-10:12:00 AM EST ── Real-time position accumulation exceeds risk thresholds.
-10:15:00 AM EST ── Emergency manual shutdown of affected servers completed.
-                  └─ Result: ~4 million unauthorized trades executed.
-                  └─ Total Loss: $440 Million.
+```mermaid
+graph TD
+    classDef time fill:#0f0f15,stroke:#2e2e3f,stroke-width:1px,color:#818cf8,font-family:monospace;
+    classDef event fill:#14141b,stroke:#2a2a35,stroke-width:1px,color:#e5e5e5;
+    classDef crit fill:#2a1212,stroke:#7f1d1d,stroke-width:1px,color:#f87171;
+    classDef result fill:#111827,stroke:#374151,stroke-width:2px,color:#38bdf8;
+
+    t1[07:00 AM EST] --> e1[Software deployment completed across production servers]
+    e1 --> t2[09:30 AM EST]
+    t2 --> e2[Market Open. Orders begin routing]
+    e2 --> t3[09:30:15 AM EST]
+    t3 --> e3[Legacy Power Peg logic triggered by incoming orders]
+    e3 --> t4[09:31:00 AM EST]
+    t4 --> e4[System begins automatically placing high-frequency trades]
+    e4 --> t5[09:45:00 AM EST]
+    t5 --> e5[Traders observe anomalous volume; source unverified]
+    e5 --> t6[10:12:00 AM EST]
+    t6 --> e6[Real-time position accumulation exceeds risk thresholds]
+    e6 --> t7[10:15:00 AM EST]
+    t7 --> e7[Emergency manual shutdown completed]
+    
+    e7 --> r1[Result: ~4 Million unauthorized trades executed]
+    e7 --> r2[Total Loss: $440 Million USD]
+
+    class t1,t2,t3,t4,t5,t6,t7 time;
+    class e1,e2,e4,e5,e7 event;
+    class e3,e6 crit;
+    class r1,r2 result;
 ```
 
 ---
@@ -84,20 +102,18 @@ From my perspective, this wasn't just a code bug; it was a fundamental runtime b
 ### The Observational Gap
 Under traditional monitoring architectures, auditing occurs post-execution:
 
-```text
-Unauthorized Action
-        │
-        ▼
-Execution Occurs
-        │
-        ▼
-Event Logged
-        │
-        ▼
-Anomalous Volume Detected (Alert Raised)
-        │
-        ▼
-Review & Intervention (45 Minutes Later)
+```mermaid
+graph TD
+    classDef step fill:#14141b,stroke:#2a2a35,stroke-width:1px,color:#e5e5e5;
+    classDef danger fill:#2a1212,stroke:#7f1d1d,stroke-width:1px,color:#f87171;
+    
+    A[Unauthorized Action] --> B(Execution Occurs)
+    B --> C(Event Logged)
+    C --> D[Anomalous Volume Detected <br/> Alert Raised]
+    D --> E[Review & Intervention <br/> 45 Minutes Later]
+
+    class A,B,C step;
+    class D,E danger;
 ```
 The action has already occurred. The audit trail exists. The damage exists as well.
 
@@ -107,23 +123,30 @@ The action has already occurred. The audit trail exists. The damage exists as we
 
 When I built Anchor, I wanted to ensure this exact class of disaster is mathematically impossible. Anchor introduces deterministic runtime verification. Before execution, every request is evaluated against an approved governance policy:
 
-```text
-               Execution Request (PowerPeg)
-                           │
-                           ▼
-             ┌───────────────────────────┐
-             │   Anchor Policy Engine    │
-             │                           │
-             │  1. Check Active Modules  │
-             │  2. Check Version Match   │
-             │  3. Verify Limits         │
-             └─────────────┬─────────────┘
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-             ▼                           ▼
-          [ALLOW]                     [DENY]
-      (Run Module)             (Halt & Seal Log)
+```mermaid
+graph TD
+    classDef request fill:#0f0f15,stroke:#2e2e3f,stroke-width:1px,color:#818cf8;
+    classDef engine fill:#0b0b14,stroke:#3b82f6,stroke-width:1.5px,color:#e5e5e5;
+    classDef allow fill:#14532d,stroke:#22c55e,stroke-width:1px,color:#86efac;
+    classDef deny fill:#7f1d1d,stroke:#ef4444,stroke-width:1px,color:#fca5a5;
+
+    Req[Execution Request: PowerPeg] --> Engine{Anchor Policy Engine}
+    
+    subgraph Checks ["Evaluation Framework"]
+        Engine -.-> C1[1. Check Active Modules]
+        Engine -.-> C2[2. Check Version Match]
+        Engine -.-> C3[3. Verify Limits]
+    end
+
+    Engine -->|Approved| Allow[ALLOW <br/> Run Module]
+    Engine -->|Violation| Deny[DENY <br/> Halt & Seal Log]
+
+    class Req request;
+    class Engine,C1,C2,C3 engine;
+    class Allow allow;
+    class Deny deny;
+
+    style Checks fill:#08080c,stroke:#1f2937,stroke-width:1px,stroke-dasharray: 5 5;
 ```
 
 My design for Anchor's two-layer governance system stops this class of failure:
