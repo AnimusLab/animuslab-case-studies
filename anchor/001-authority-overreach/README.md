@@ -200,18 +200,8 @@ To demonstrate how the Anchor engine handles this failure mode, I executed a sim
 - **Trigger Event:** High-frequency order generation
 
 ### Sandboxed Console Output
-```text
-[2026-06-08 09:30:15.001] [SYS] Initializing order router. Active modules: [MarketMakerV3, LiquidityProviderV2]
-[2026-06-08 09:30:15.042] [SYS] Incoming buy order routed: ticker=AAPL qty=100 price=MKT
-[2026-06-08 09:30:15.043] [SYS] Legacy module activation request intercepted: module=PowerPeg version=legacy
-[2026-06-08 09:30:15.043] [ANCHOR] Intercepting execution capability: target=PowerPeg action=execute
-[2026-06-08 09:30:15.044] [ANCHOR] Running policy checks for POL-FIN-001 v3.2.0...
-[2026-06-08 09:30:15.044] [ANCHOR] [CHECK] Evaluating RULE-COMPONENT-001 (whitelist)... PASSED
-[2026-06-08 09:30:15.045] [ANCHOR] [CHECK] Evaluating RULE-COMPONENT-002 (blocklist)... FAILED
-[2026-06-08 09:30:15.045] [ANCHOR] [VIOLATION] Execution of deprecated module 'PowerPeg' is strictly forbidden.
-[2026-06-08 09:30:15.045] [ANCHOR] [MITIGATION] Action: HALT_WITH_THERAPY. Initiating safe state isolation.
-[2026-06-08 09:30:15.046] [ANCHOR] [DAC] Cryptographically sealing block ID 108432. Hash: e3b0c442...
-[2026-06-08 09:30:15.047] [SYS] [HALT] Process terminated by Anchor Engine. Orders routed to exchange: 0.
+```playground-knight-capital
+interactive-playground
 ```
 
 ---
