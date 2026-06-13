@@ -192,21 +192,9 @@ Below is the execution trace captured from our payment gateway node when a clien
 - **Active Policy:** `POL-FIN-005` (payment constraints)
 - **Authorized Schedule:** Interest limit = $7,800,000.00 (Tolerance: 5%)
 
-### Console Output
-```text
-[2026-06-12 14:30:00.001] [SYS] Wire Transfer Request initiated for Revlon Creditors
-[2026-06-12 14:30:00.005] [ANCHOR] Intercepting transaction intent payload...
-[2026-06-12 14:30:00.010] [ANCHOR] Parsing payload:
-  - recipient: "Revlon Creditors"
-  - amount: $893,000,000.00 USD
-  - type: "interest"
-[2026-06-12 14:30:00.012] [ANCHOR] Querying authorized payment schedule for obligation ID: OBL-REV-2020
-[2026-06-12 14:30:00.015] [ANCHOR] Found schedule: [expected_amount: $7,800,000.00, allowed_tolerance: 5.0%]
-[2026-06-12 14:30:00.016] [ANCHOR] [CHECK] Evaluating RULE-PAYMENT-LIMIT...
-[2026-06-12 14:30:00.017] [ANCHOR] [VIOLATION] Transaction amount ($893,000,000.00) exceeds expected amount ($7,800,000.00) by 11,348.7%.
-[2026-06-12 14:30:00.018] [ANCHOR] [MITIGATION] Action: BLOCK. Wire transmission terminated.
-[2026-06-12 14:30:00.019] [ANCHOR] [DAC] Cryptographically sealing block ID 500293. Hash: d7a4e9b2...
-[2026-06-12 14:30:00.020] [SYS] Error: Outbound payment blocked by active policy boundary engine. Transaction rejected.
+### Sandboxed Console Output
+```playground-citibank-transfer
+interactive-playground
 ```
 
 ---

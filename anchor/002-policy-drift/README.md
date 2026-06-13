@@ -169,18 +169,8 @@ Below is the execution trace captured from our simulated customer support node w
 - **Active Invariant:** `refund.retroactive = false`
 
 ### Sandboxed Console Output
-```text
-[2026-06-08 10:12:00.001] [SYS] User Session: USR-98203 initialized.
-[2026-06-08 10:12:05.142] [SYS] User Query: "Can I get a refund for bereavement after booking?"
-[2026-06-08 10:12:06.012] [MODEL] Generated output: "Yes, you can apply for your refund retroactively. Go to website..."
-[2026-06-08 10:12:06.013] [ANCHOR] Intercepting output text. Parsing semantic assertions...
-[2026-06-08 10:12:06.025] [ANCHOR] Detected assertion: [refund.retroactive = true]
-[2026-06-08 10:12:06.026] [ANCHOR] Running policy checks for POL-SUPPORT-002 v1.1.0...
-[2026-06-08 10:12:06.027] [ANCHOR] [CHECK] Evaluating RULE-BEREAVEMENT-001 (retroactive refunds)... FAILED
-[2026-06-08 10:12:06.027] [ANCHOR] [VIOLATION] Model asserted [refund.retroactive = true] which contradicts policy [refund.retroactive = false].
-[2026-06-08 10:12:06.028] [ANCHOR] [MITIGATION] Action: COERCE. Replacing drifted output with official policy text.
-[2026-06-08 10:12:06.029] [ANCHOR] [DAC] Cryptographically sealing block ID 209481. Hash: a4f8b2c9...
-[2026-06-08 10:12:06.030] [SYS] Output Emitted: "I apologize, but bereavement fares must be requested prior to booking. Air Canada does not offer retroactive refunds for these tickets."
+```playground-policy-drift
+interactive-playground
 ```
 
 ---

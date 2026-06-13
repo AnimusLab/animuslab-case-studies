@@ -191,20 +191,9 @@ Below is the execution trace captured from the Anchor CI/CD gate during a simula
 - **Active Constitution:** `POL-DEPLOY-004` (deployment integrity rules)
 - **Staging logs path:** `/var/logs/staging/`
 
-### Console Output
-```text
-[2026-06-12 11:20:00.001] [SYS] CI/CD Pipeline Initiated: Release v4.0.0
-[2026-06-12 11:20:01.050] [ANCHOR] Intercepting deployment manifest...
-[2026-06-12 11:20:01.062] [ANCHOR] Detected configuration: [routing.datacenter_nodes = 2]
-[2026-06-12 11:20:01.063] [ANCHOR] Reading staging verification reports from /var/logs/staging/
-[2026-06-12 11:20:02.114] [ANCHOR] [CHECK] Evaluating RULE-DC-VERIFICATION-001...
-[2026-06-12 11:20:02.115] [ANCHOR] Staging Logs match: Node A (VERIFIED), Node B (NO_LOGS_FOUND)
-[2026-06-12 11:20:02.116] [ANCHOR] [VIOLATION] Active-Active deployment requires staging logs for all nodes. Found logs for 1/2 nodes.
-[2026-06-12 11:20:02.117] [ANCHOR] [CHECK] Evaluating RULE-DEFECT-LIMIT... Open high-severity defects: 1,200 (Limit: 50)
-[2026-06-12 11:20:02.118] [ANCHOR] [VIOLATION] Defects count exceeds authorized release floor.
-[2026-06-12 11:20:02.119] [ANCHOR] [MITIGATION] Action: BLOCK. Deployment halted.
-[2026-06-12 11:20:02.120] [ANCHOR] [DAC] Cryptographically sealing block ID 400192. Hash: 3e8b4e72...
-[2026-06-12 11:20:02.122] [SYS] Build Failed. Deployment rejected by Anchor Policy Engine.
+### Sandboxed Console Output
+```playground-tsb-migration
+interactive-playground
 ```
 
 ---

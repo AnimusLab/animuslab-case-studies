@@ -139,36 +139,9 @@ To prove the validity of the DAC, I simulated a compliance audit on an active le
 - **Target Block ID:** `84f1`
 - **Command:** `anchor verify --block 84f1 --keyring ./keys/compliance_pub.pem`
 
-### Command Trace Output
-```bash
-$ anchor verify --block 84f1 --keyring ./keys/compliance_pub.pem
-
-[+] Loading ledger block 84f1... SUCCESS
-[+] Extracting block components:
-    - Block Timestamp: 2026-03-15T14:30:15.102Z
-    - Module Origin: LiquidityProviderV2
-    - Action Target: execute_swap
-    - Policy Reference: POL-FIN-001 v3.2.0
-[+] Re-calculating state hashes:
-    - Calculated Prompt Context Hash: 1d8b9c0a1f2e3d4c5b6a7f8e9d0c1b2a3d4e5f6a...
-    - Block Record Context Hash:     1d8b9c0a1f2e3d4c5b6a7f8e9d0c1b2a3d4e5f6a...
-    - RESULT: Hash Verification matches.
-[+] Re-evaluating active policy:
-    - Calculated Policy Configuration Hash: 8f39b1a2c3d4e5f6a7b8c9d0e1f2a3b4c5...
-    - Block Record Policy Hash:           8f39b1a2c3d4e5f6a7b8c9d0e1f2a3b4c5...
-    - RESULT: Policy Rules match.
-[+] Verifying cryptographic signature:
-    - Signature: MEQCIFH+gL/XbN8FmR+NlpxgC767Dsm/t...
-    - PublicKey: compliance_pub.pem
-    - RESULT: ECDSA Signature VALID.
-[+] Verification Summary:
-    -----------------------------------------------------
-    Chain Integrity: INTACT
-    Signature Validation: PASS
-    Policy Matching: PASS
-    State Provenance: VERIFIED
-    -----------------------------------------------------
-[+] Exporting Signed Provenance Certificate: ./certs/TX-893041-proof.cert
+### Sandboxed Console Output
+```playground-audit-reconstruction
+interactive-playground
 ```
 
 ---
