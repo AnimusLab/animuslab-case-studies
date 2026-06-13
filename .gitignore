@@ -21,6 +21,12 @@ anchor/*
 !anchor/003-audit-reconstruction/
 !anchor/003-audit-reconstruction/**
 
+!anchor/004-tsb-migration/
+!anchor/004-tsb-migration/**
+
+!anchor/005-citibank-transfer/
+!anchor/005-citibank-transfer/**
+
 # Optional future public assets
 !governance-assets/
 governance-assets/*

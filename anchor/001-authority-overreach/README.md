@@ -206,7 +206,62 @@ interactive-playground
 
 ---
 
-## 9. Technical Specification & Policy Rules
+## 9. Expanded Forensic Analysis (SEC Findings & Deeper Anatomy)
+
+### The Full Anatomy of a 45-Minute Collapse
+Knight Capital Group's August 1, 2012 failure has been widely cited as a warning about algorithmic trading risk. The full anatomy of the failure is more specific — and more instructive for governance infrastructure design — than the summary version typically conveys.
+
+Knight was, at the time, one of the largest market makers in U.S. equities, executing approximately 10-15% of daily trading volume in NYSE and Nasdaq-listed stocks. On August 1, Knight deployed new software to support the NYSE's newly launched Retail Liquidity Program. The deployment required updating code on eight production trading servers.
+
+The code was deployed to seven of the eight servers. The eighth server, through a deployment procedure failure — a technician did not complete the update, and no second technician verified the deployment — continued running the prior version of the code. That prior version contained a dormant function called "Power Peg" — internal trading logic Knight had stopped using in 2003. Power Peg had been retained in the codebase for nine years despite being operationally inactive.
+
+The new code repurposed a configuration flag — SMARS (Smart Market Access Routing System) order router repurpose flag — for a new function. Power Peg, still present in the eighth server's code, still recognized that flag as its own activation signal. When the NYSE opened at 9:30 AM on August 1 and Knight's systems began processing orders through the Retail Liquidity Program, the seven correctly-updated servers routed orders normally. The eighth server activated Power Peg.
+
+Power Peg had, in 2003, included a cumulative quantity safeguard — a limit that would cause it to stop sending child orders once the parent order had been filled. In 2005, that safeguard had been relocated within the codebase as part of a restructuring. It was never retested after the relocation. When Power Peg activated on August 1, 2012, the safeguard was no longer functioning. Power Peg sent continuous streams of child orders — buying and selling — without limit, without regard to whether the parent orders had been filled, and without any position limits constraining the accumulation of exposure.
+
+For 45 minutes, Knight's systems accumulated a catastrophic unintended position. Trading operations staff saw the firm's risk management systems generating continuous alerts but were unable to identify which system was generating the orders or how to stop them. Multiple attempts to address the problem were made. None succeeded in time. At approximately 10:15 AM, Knight's direct market access to the NYSE was terminated. By then, the firm had executed over 4 million trades across 154 stocks, accumulating approximately $3.5 billion in long positions and $3.15 billion in short positions — a net unintended exposure of roughly $7 billion notional. The realized loss was more than $460 million.
+
+Knight Capital did not survive the loss as an independent entity. It was acquired by Getco LLC in 2013, and the merged entity — KCG Holdings — was eventually acquired by Virtu Financial in 2017.
+
+### The SEC's Findings
+The SEC's October 2013 administrative order is notable for its specificity about the governance failures. The order identifies four distinct failures:
+
+*   **Failure 1 — Incomplete deployment without verification:** Knight did not have a procedure requiring a second person to verify that the code deployment to all production servers had been completed before trading commenced. A single technician's oversight — not copying the new code to one server — was sufficient to cause the failure.
+*   **Failure 2 — Retention of deprecated code in production:** Power Peg had been operationally inactive since 2003. Nine years later, it remained in Knight's production codebase, available to be activated. The SEC order notes that Knight's controls did not address whether the dormant code's mere presence in production constituted a risk.
+*   **Failure 3 — Missing behavioral re-verification post-modification:** When Power Peg's cumulative quantity safeguard was relocated within the code in 2005, it was not retested. The SEC order specifically states that "a written protocol requiring the retesting of the Power Peg functionality when it was last modified in 2005 could have identified that the safeguards had been disabled." This is, almost precisely, a description of what the Diamond Cage behavioral verification mechanism provides.
+*   **Failure 4 — Inadequate pre-deployment testing:** Knight did not adequately test the new RLP code in its production-equivalent environment before deployment to identify the interaction between the new code's flag usage and Power Peg's existing flag recognition.
+
+The SEC found violations of Exchange Act Rule 15c3-5 (the Market Access Rule, requiring firms to have risk management controls reasonably designed to prevent erroneous orders) and Regulation SHO. The civil penalty was $12 million.
+
+### The Three Governance Mechanisms That Would Have Intervened
+*   **Mechanism 1: Static deprecated code detection:** A constitutional rule blocklisting known-deprecated trading logic modules would produce a BLOCKER finding at CI time for any deployment artifact containing Power Peg — by function name, by the specific flag-handling pattern, or by structural signature. This rule does not require knowing that Power Peg is dangerous on August 1, 2012. It requires knowing that Power Peg was deprecated in 2003, which was known. A blocklisted function present in a deployment artifact is a BLOCKER finding. The deployment cannot proceed until the finding is resolved.
+*   **Mechanism 2: Fleet integrity verification:** Cryptographic integrity verification sealing the hash of the current approved codebase and verifying deployed artifacts against that hash before any server enters production would cause the eighth server — running code whose hash did not match the current sealed version — to fail verification. The server would not be brought into production. Trading would not commence across an asymmetric fleet. This check is independent of any knowledge of Power Peg — it fires whenever any server's deployed code does not match the approved, sealed version.
+*   **Mechanism 3: Behavioral verification of modified code paths:** The Diamond Cage mechanism — executing candidate code in an isolated sandbox and observing its behavior rather than inferring it from source structure — would have identified, when Power Peg's safeguard was relocated in 2005, that the relocated code path no longer bounded Power Peg's order volume. The SEC order identifies this as the specific missing control. Behavioral verification proves behavior under execution. It does not assume that code which worked before a modification still works after it.
+
+Any one of these three mechanisms would have interrupted the failure path. Together, they close the deployment integrity gap that the SEC identified as the proximate governance failure.
+
+### Why This Pattern Recurs
+The Knight Capital failure is the most studied case in algorithmic governance literature. Yet the pattern it represents — a dormant code path activated by an unexpected interaction with new code, in a fleet where not all servers are running the same version — is not unique to Knight, and it is not unique to algorithmic trading. The same pattern recurs wherever complex software systems are updated incrementally across multiple production instances, and wherever the governance infrastructure does not include: verification that all instances are running identical code, detection of deprecated functionality that should no longer be present, and behavioral re-verification whenever code that controls critical functions is modified.
+
+The EU AI Act's Article 9 requirement — risk management documentation throughout the AI system's lifecycle — describes this pattern. The SEC's market access rule — requiring controls reasonably designed to prevent erroneous orders — describes this pattern. The TSB independent review's findings describe this pattern in a different domain. The pattern is not domain-specific. The governance infrastructure to address it is not domain-specific either.
+
+### Key Numbers
+| Metric | Value |
+|--------|-------|
+| Duration of trading | 45 minutes |
+| Trades executed | 4,000,000+ |
+| Stocks affected | 154 |
+| Long positions accumulated | ~$3.5B |
+| Short positions accumulated | ~$3.15B |
+| Net realized loss | $460M+ |
+| Years Power Peg was dormant before activation | 9 |
+| Years since safeguard was relocated without retesting | 7 |
+| Servers running incorrect code | 1 of 8 |
+| SEC civil penalty | $12M |
+
+---
+
+## 10. Technical Specification & Policy Rules
 
 ### Active Policy Configuration (`constitution.anchor`)
 The following policy defines the approved trading components and explicitly restricts deprecated or legacy logic:
@@ -250,14 +305,14 @@ Action:               Execution Denied. Process Terminated.
 ---
 
 ### Sources & Citation Ledger
-- **Total Sources Reviewed:** 6
-- **Primary Sources (Regulatory/Official):** 2
+- **Total Sources Reviewed:** 7
+- **Primary Sources (Regulatory/Official):** 3
 - **Academic/Technical Records:** 1
 - **Media & Investigative Reports:** 3
 
 ---
 
-## 10. Governance Principle Established
+## 11. Governance Principle Established
 
 > [!IMPORTANT]
 > **No executable capability may run unless explicitly authorized by the active constitution at runtime.**

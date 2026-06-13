@@ -29,6 +29,12 @@ These studies document deterministic policy enforcement, capability isolation, a
 *   **[`003-audit-reconstruction`](file:///d:/animuslab-case-studies/anchor/003-audit-reconstruction)** — *Post-Facto Forensic Root-Cause Analysis*
     *   *Scenario:* Resolving a critical compliance event by auditing an agent's historical decision trace.
     *   *Resolution:* Details the reconstruction of the agent's internal state transitions and decision logic using the immutable, append-only Decision Audit Chain.
+*   **[`004-tsb-migration`](file:///d:/animuslab-case-studies/anchor/004-tsb-migration)** — *Configuration Integrity and Go/No-Go Decision Attribution*
+    *   *Scenario:* A core banking IT migration results in a £600M system failure because dual active-active datacenters were launched with mismatched configuration settings and incomplete defect visibility.
+    *   *Resolution:* Demonstrates how Anchor's CI/CD configuration drift invariants and cryptographically sealed defect lists prevent unverified deployments.
+*   **[`005-citibank-transfer`](file:///d:/animuslab-case-studies/anchor/005-citibank-transfer)** — *Authorization Controls and Structured Intent Verification*
+    *   *Scenario:* Citibank accidentally wires $893M due to confusing Oracle Flexcube interface checkboxes and a prose-based authorization process that lacked structured breakdown checks.
+    *   *Resolution:* Illustrates Anchor's Structured Mode authorization engine, enforcing schedule-based limits and amount-range validation.
 
 ---
 
@@ -55,10 +61,12 @@ Every case study in this archive directly tests one of the **Six Constitutional 
 
 | Case Study / Asset | Target Invariant | Implementation Mechanism |
 | :--- | :--- | :--- |
-| **001-Authority Overreach** | *Constraints Create Clarity* | Dynamic AST boundary isolation |
-| **002-Policy Drift** | *Semantics Before Representation* | Multi-lingual semantic boundary checks |
-| **003-Audit Reconstruction** | *Truth Over Optics* | Immutable Decision Audit Chain ledger |
-| **Model Risk Framework** | *Failure Is a State Transition* | Safe state transitions during threshold breach |
+| **001-Authority Overreach** | *Freedom without constraints produces noise.* | Dynamic AST boundary isolation |
+| **002-Policy Drift** | *Representation is disposable. Meaning is not.* | Multi-lingual semantic boundary checks |
+| **003-Audit Reconstruction** | *If it cannot survive scrutiny, it should not be displayed.* | Immutable Decision Audit Chain ledger |
+| **004-TSB IT Migration** | *Adoption is optional. Integrity is not.* | Staging/Production drift verification at CI/CD |
+| **005-Citibank Transfer** | *If it cannot survive scrutiny, it should not be displayed.* | Structured Mode range-validation constraints |
+| **Model Risk Framework** | *Failure is evidence of movement.* | Safe state transitions during threshold breach |
 
 ---
 
