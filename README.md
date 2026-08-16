@@ -2,7 +2,7 @@
 
 A public, reproducible archive of case studies, institutional governance frameworks, forensic analyses, and implementation evidence produced by AnimusLab.
 
-This repository serves as the empirical record for our research—demonstrating how the theoretical invariants of the **AnimusLab Constitution** translate into practical, high-performance, and deterministic control infrastructure for advanced AI systems.
+> **Engine Compatibility:** Anchor v6.0.1 (Updated post-v6 rework, informed by direct feedback from a Tier-1 institutional practitioner review via FINOS/DTCC hackathon collaboration).
 
 ---
 
